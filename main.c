@@ -4,19 +4,27 @@
 
 void read_and_print(char* filename, char* output) {
   
+  //Opening the passed file
   FILE *f = fopen(filename, "r");
   if(f == NULL) {
     fprintf(stderr, "Error opening file '%s'\n", filename);
     exit(1);
   }
+  //Holds lines of file
   char *buffer;
+  //Length of line in bytes
   size_t length = 0;
+  //Total length in bytes of all lines
   size_t total_length = 0;
+  //Number of characters on the line
   ssize_t line_size = 0;
+  //Total number of characters
   ssize_t total_size = 0;
+  //Total number of lines
   int total_lines = 0;
-  line_size = getline(&buffer, &length, f);
 
+  line_size = getline(&buffer, &length, f);
+  //Reading through input to get above variables
   while(line_size>= 0) {
     line_size = getline(&buffer, &length, f);
     total_size += line_size;
@@ -27,10 +35,12 @@ void read_and_print(char* filename, char* output) {
   buffer = NULL;
   fclose(f);
 
+  //Reopening f after the close
   f = fopen(filename, "r+");
   if(f == NULL) {
     fprintf(stderr, "Error opening file '%s'\n", filename);
   }
+  //Opening g for the output file
   FILE *g = fopen(output, "w+");
   if(g == NULL) {
     fprintf(stderr, "Error writing to file '%s'\n", output);
@@ -38,17 +48,17 @@ void read_and_print(char* filename, char* output) {
 
   line_size = getline(&buffer, &length, f);
 
+  //Doubly nested char* to store lines
   char **deliverable = (char **)calloc(total_lines, sizeof(char));
   for(int i = 0; i < total_lines; i++) {
     deliverable[i] = (char *)calloc(total_length, sizeof(char));
   }
-  
-  ssize_t next_size = 0;
-  ssize_t next_ceil = 0;
+  //
+
   int tick = 0;
   while(line_size>= 0) {
-    next_size += line_size;
-    next_ceil = next_size - line_size;
+
+    //For loop assigning buffer values to final deliverable 
     for(int i = 0; i < line_size; i++) {
       deliverable[tick][i] = buffer[i];
       printf("%c", buffer[i]);
@@ -57,6 +67,7 @@ void read_and_print(char* filename, char* output) {
     tick++;
   }
   fclose(f);
+  //Actual reversing function, and printing to output
   for(int i = total_lines - 1; i >= 0; i--) {
     fprintf(g, "\n%s", deliverable[i]);
   }
